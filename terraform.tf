@@ -1,23 +1,17 @@
-resource "google_compute_instance" "default" {
-  name         = "my-jenkins-vm"
-  machine_type = "e2-micro"  # Choose an appropriate machine type
-  zone         = "us-central1-b"
+resource "google_storage_bucket" "my_bucket" {
+  name          = "new-jenkins-pipeline-bucket"                           # Update with your desired bucket name
+  location      = "US"                                          # Set the desired location (e.g., "US", "eu", etc.)
+  storage_class = "STANDARD"                                    # Set the storage class (e.g., "STANDARD", "NEARLINE", etc.)
 
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"  # Choose the OS image
-    }
+  versioning {
+    enabled = true                                             # Enable versioning if needed
   }
 
-  network_interface {
-    network = "default"
-    access_config {
-      // Include this block to give the VM a public IP
-    }
+  lifecycle {
+    prevent_destroy = true                                     # Prevent accidental deletion
   }
+}
 
-  metadata_startup_script = <<-EOF
-    #!/bin/bash
-    echo "Hello, World!" > /var/log/startup-script.log
-  EOF
+output "bucket_name" {
+  value = google_storage_bucket.my_bucket.name
 }
